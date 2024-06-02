@@ -15,6 +15,13 @@
             background-color: #ff6600; /* Оранжевый */
             padding: 20px;
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        header img {
+            height: 50px;
+            margin-right: 20px;
         }
         header h1 {
             margin: 0;
@@ -25,6 +32,9 @@
             display: flex;
             justify-content: center;
             background-color: #ff3300; /* Красный */
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
         nav a {
             color: white;
@@ -42,6 +52,16 @@
             flex-wrap: wrap;
             justify-content: center;
             margin: 20px;
+        }
+        .menu-category {
+            width: 100%;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .menu-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .menu-item {
             background-color: white;
@@ -70,11 +90,24 @@
         }
         .prices {
             margin: 10px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
         }
-        .prices span {
-            display: block;
-            font-size: 1.2em;
-            color: #333;
+        .prices button {
+            font-size: 1em;
+            color: white;
+            background-color: #ff3300; /* Красный */
+            border: none;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            flex: 1 1 45%;
+            box-sizing: border-box;
+        }
+        .prices button:hover {
+            background-color: #ff9933; /* Светло-оранжевый */
         }
         footer {
             background-color: #ff6600; /* Оранжевый */
@@ -117,7 +150,7 @@
             text-decoration: none;
             cursor: pointer;
         }
- 	.modal-image {
+        .modal-image {
             max-width: 80%;
             max-height: 80%;
             margin: auto;
@@ -125,12 +158,15 @@
         }
 
         /* Адаптивный дизайн */
+        @media (max-width: 1024px) {
+            .menu-item {
+                width: calc(50% - 40px);
+            }
+        }
+
         @media (max-width: 768px) {
             nav {
                 flex-direction: column;
-            }
-            .menu-item {
-                width: calc(50% - 40px);
             }
         }
 
@@ -138,102 +174,261 @@
             .menu-item {
                 width: calc(100% - 40px);
             }
-        }
+        }        
+
+
+
+@media (max-width: 768px) {
+    nav {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+    nav a {
+        white-space: nowrap;
+    }
+}
     </style>
 </head>
 <body>
 
 <header>
+    <!--img src="logo.png" alt="Логотип МакВова"-->
     <h1>Добро пожаловать в МакВова</h1>
 </header>
 
 <nav>
-    <a href="#">Меню</a>
+    <a href="#burgers-rolls">Бургеры и роллы</a>
+    <a href="#fries-starters">Картофель и стартеры</a>
+    <a href="#drinks">Холодные напитки</a>
+    <a href="#cafe">ВовКафе</a>
+    <a href="#combo">ВовКомбо</a>
     <a id="aboutBtn">О нас</a>
 </nav>
 
 <div class="menu">
-    <div class="menu-item" id="menu1">
-        <img src="big.jpg" alt="БигВов" onclick="openImage(this.src)">
-        <h3>БигВов</h3>
-        <p>Погрузитесь в мир великолепного вкуса с нашим БигВовом! Этот бургер - настоящий гастрономический опыт, с двумя сочными говяжьими котлетками, нежным сыром и аппетитными овощами, завёрнутыми в пышную булочку. Один укус, и вы почувствуете вкус праздника!</p>
-        <div class="prices">
-            <span>225 руб.</span>
+    <div id="burgers-rolls" class="menu-category">
+        <h2>Бургеры и роллы</h2>
+        <div class="menu-grid">
+            <div class="menu-item" id="menu1">
+                <img src="big.jpg" alt="БигВов" onclick="openImage(this.src)">
+                <h3>БигВов</h3>
+                <p>Погрузитесь в мир великолепного вкуса с нашим БигВовом! Этот бургер - настоящий гастрономический опыт, с двумя сочными говяжьими котлетками, нежным сыром и аппетитными овощами, завёрнутыми в пышную булочку. Один укус, и вы почувствуете вкус праздника!</p>
+                <div class="prices">
+                    <button>225 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item" id="menu2">
+                <img src="pink.jpg" alt="Пинк Бургер" onclick="openImage(this.src)">
+                <h3>Пинк Бургер</h3>
+                <p>Откройте для себя необычный вкус с Пинк Бургером! Нежная, сочная розовая говяжья котлетка, сочные овощи и ароматный сыр, спрятанные в нежной булочке. Этот бургер - настоящий сюрприз для вашего вкуса!</p>
+                <div class="prices">
+                    <button>190 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item" id="menu3">
+                <img src="king.jpg" alt="Вовиный король" onclick="openImage(this.src)">
+                <h3>Вовиный король</h3>
+                <p>Встречайте короля всех бургеров - Вовиный король! Огромный, сытный и невероятно вкусный. Спелые овощи, нежная говяжья котлетка и аппетитный сыр, все это в объятиях нашей нежной булочки. Вовиный король - это настоящий праздник для вашего вкуса!</p>
+                <div class="prices">
+                    <button>170 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item" id="menu4">
+                <img src="roll.jpg" alt="БигВовРолл" onclick="openImage(this.src)">
+                <h3>БигВовРолл</h3>
+                <p>Завернитесь в удовольствие с нашим БигВовРоллом! Нежные наггетсы, свежие овощи и аппетитный сыр, завёрнутые в тонкий лаваш. Этот ролл - настоящее воплощение вкуса и удовольствия!</p>
+                <div class="prices">
+                    <button>280 руб.</button>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="menu-item" id="menu2">
-        <img src="pink.jpg" alt="Пинк Бургер" onclick="openImage(this.src)">
-        <h3>Пинк Бургер</h3>
-        <p>Откройте для себя необычный вкус с Пинк Бургером! Нежная, сочная розовая говяжья котлетка, сочные овощи и ароматный сыр, спрятанные в нежной булочке. Этот бургер - настоящий сюрприз для вашего вкуса!</p>
-        <div class="prices">
-            <span>190 руб.</span>
+
+    <div id="fries-starters" class="menu-category">
+        <h2>Картофель и стартеры</h2>
+        <div class="menu-grid">
+            <div class="menu-item" id="menu5">
+                <img src="fries.jpg" alt="Картофель Фри" onclick="openImage(this.src)">
+                <h3>Картофель Фри</h3>
+                <p>Попробуйте наш классический картофель фри - хрустящий, золотистый и невероятно вкусный. Он идеально дополняет любое блюдо и дарит вам незабываемое удовольствие от каждого кусочка.</p>
+                <div class="prices">
+                    <button>Мал: 80 руб.</button>
+                    <button>Ср: 120 руб.</button>
+                    <button>Бол: 170 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item" id="menu8">
+                <img src="nuggets.jpg" alt="Чикен Вовнаггетс" onclick="openImage(this.src)">
+                <h3>Чикен Вовнаггетс</h3>
+                <p>Попробуйте наши нежные наггетсы! Они настолько сочные и ароматные, что просто тают во рту. Каждый кусочек - это настоящий взрыв вкуса и удовольствия!</p>
+                <div class="prices">
+                    <button>3 шт: 80 руб.</button>
+                    <button>6 шт: 120 руб.</button>
+                    <button>9 шт: 150 руб.</button>
+                    <button>18 шт: 260 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item" id="menu9">
+                <img src="strips.jpg" alt="ВовСтрипсы" onclick="openImage(this.src)">
+                <h3>ВовСтрипсы</h3>
+                <p>Насладитесь нежностью наших стрипсов! Сочные, ароматные полоски куриного мяса, обжаренные до золотистой корочки и приправленные специями. Они точно станут вашей новой любимой закуской!</p>
+                <div class="prices">
+                    <button>3 шт: 120 руб.</button>
+                    <button>5 шт: 150 руб.</button>
+                    <button>7 шт: 200 руб.</button>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="menu-item" id="menu3">
-        <img src="king.jpg" alt="Вовиный король" onclick="openImage(this.src)">
-        <h3>Вовиный король</h3>
-        <p>Встречайте короля всех бургеров - Вовиный король! Огромный, сытный и невероятно вкусный. Спелые овощи, нежная говяжья котлетка и аппетитный сыр, все это в объятиях нашей нежной булочки. Вовиный король - это настоящий праздник для вашего вкуса!</p>
-        <div class="prices">
-            <span>170 руб.</span>
+
+    <div id="drinks" class="menu-category">
+        <h2>Холодные напитки</h2>
+        <div class="menu-grid">
+            <div class="menu-item">
+            <img src="cola.jpg" alt="Добрый Кола" onclick="openImage(this.src)">
+            <h3>Добрый Кола</h3>
+            <p>Освежитесь и насладитесь вкусом детства с нашей Колой! Холодный, освежающий напиток, наполненный пузырьками счастья и ароматом сладости. Кола - это не просто напиток, это настоящее настроение!</p>
+            <div class="prices">
+                <button>Мал.: 80 руб.</button>
+                <button>Ср.: 100 руб.</button>
+                <button>Бол.: 150 руб.</button>
+            </div>
+        </div>
+        <div class="menu-item">
+            <img src="juice.jpg" alt="Добрый Апельсин" onclick="openImage(this.src)">
+            <h3>Добрый Апельсин</h3>
+            <p>Погрузитесь в аромат натурального апельсинового сока, наполненного витаминами и энергией. Он пробудит ваш вкус и зарядит вас на весь день!</p>
+            <div class="prices">
+                <button>Мал.: 80 руб.</button>
+                <button>Ср.: 100 руб.</button>
+                <button>Бол.: 150 руб.</button>
+            </div>
+    </div>
         </div>
     </div>
-    <div class="menu-item" id="menu4">
-        <img src="roll.jpg" alt="БигВовРолл" onclick="openImage(this.src)">
-        <h3>БигВовРолл</h3>
-        <p>Завернитесь в удовольствие с нашим БигВовРоллом! Нежные наггетсы, свежие овощи и аппетитный сыр, завёрнутые в тонкий лаваш. Этот ролл - настоящее воплощение вкуса и удовольствия!</p>
-        <div class="prices">
-            <span>280 руб.</span>
+
+    <div id="cafe" class="menu-category">
+        <h2>ВовКафе</h2>
+        <div class="menu-grid">
+            <div class="menu-item">
+                <img src="raspberry.jpg" alt="Малиновая тарталетка" onclick="openImage(this.src)">
+                <h3>Малиновая тарталетка</h3>
+                <p>Нежное слоеное тесто, наполненное сочными ягодами малины и покрытое аппетитным слоем карамели, с капучино или латте. Настоящее удовольствие для вашего вкуса!</p>
+                <div class="prices">
+                    <button>129 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="classic.jpg" alt="Классический чизкейк" onclick="openImage(this.src)">
+                <h3>Классический чизкейк</h3>
+                <p>Нежный и воздушный чизкейк с нежным вкусом сыра и нотками ванили, с капучино или латте. Нежный десерт, который заставит вас влюбиться с первого кусочка!</p>
+                <div class="prices">
+                    <button>150 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="mak.jpg" alt="Плетенка с маком" onclick="openImage(this.src)">
+                <h3>Плетенка с маком</h3>
+                <p>Насыщенное тесто, пропитанное ароматом мака и обжаренное до золотистой корочки, с капучино или латте. Идеальное дополнение к вашему кофейному перерыву!</p>
+                <div class="prices">
+                    <button>173 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="caramel.jpg" alt="Карамельный чизкейк" onclick="openImage(this.src)">
+                <h3>Карамельный чизкейк</h3>
+                <p>Нежный и ароматный чизкейк, покрытый слоем карамели и украшенный орехами, с капучино или латте. Идеальное сочетание сладости и нежности в каждом кусочке!</p>
+                <div class="prices">
+                    <button>188 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="strawberry.jpg" alt="Клубничный чизкейк" onclick="openImage(this.src)">
+                <h3>Клубничный чизкейк</h3>
+                <p>Сочный и ароматный чизкейк с нежным вкусом клубники и кремовым слоем, с капучино или латте. Идеальное лакомство для настоящих ценителей ягодных десертов!</p>
+                <div class="prices">
+                    <button>197 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="syrnik.jpg" alt="Сырники" onclick="openImage(this.src)">
+                <h3>Сырники</h3>
+                <p>Нежные сырники, приготовленные по особому рецепту с добавлением нежного творожного сыра, с капучино или латте. Насыщенный и ароматный завтрак для вашего идеального утра!</p>
+                <div class="prices">
+                    <button>120 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="capuccino.jpg" alt="Капучино" onclick="openImage(this.src)">
+                <h3>Капучино</h3>
+                <p>Насладитесь нежным сочетанием ароматного кофе, горячего молока и воздушной молочной пенки. Капучино - идеальный выбор для любителей насыщенного вкуса и нежной текстуры.</p>
+                <div class="prices">
+                    <button>Мал: 80 руб.</button>
+                    <button>Ср: 120 руб.</button>
+                    <button>Бол: 150 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="latte.jpg" alt="Латте" onclick="openImage(this.src)">
+                <h3>Латте</h3>
+                <p>Насыщенный кофейный напиток, приготовленный из эспрессо и горячего молока, покрытый аппетитной молочной пенкой. Латте — идеальный способ начать свой день или насладиться моментом расслабления.</p>
+                <div class="prices">
+                    <button>Мал: 80 руб.</button>
+                    <button>Ср: 120 руб.</button>
+                    <button>Бол: 150 руб.</button>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="menu-item" id="menu5">
-        <img src="fries.jpg" alt="Картофель Фри" onclick="openImage(this.src)">
-        <h3>Картофель Фри</h3>
-        <p>Попробуйте наши хрустящие фри! Свежая картошечка, обжаренная до золотистой корочки и приправленная специями - это идеальное дополнение к любому блюду или просто отличная закуска для вашего вечера!</p>
-        <div class="prices">
-            <span>Маленькая: 80 руб.</span>
-            <span>Средняя: 120 руб.</span>
-            <span>Большая: 110 руб.</span>
-        </div>
-    </div>
-    <div class="menu-item" id="menu6">
-        <img src="cola.jpg" alt="Добрый Кола" onclick="openImage(this.src)">
-        <h3>Добрый Кола</h3>
-        <p>Освежитесь и насладитесь вкусом детства с нашей Колой! Холодный, освежающий напиток, наполненный пузырьками счастья и ароматом сладости. Кола - это не просто напиток, это настоящее настроение!</p>
-        <div class="prices">
-            <span>Маленькая: 89 руб.</span>
-            <span>Средняя: 100 руб.</span>
-            <span>Большая: 150 руб.</span>
-        </div>
-    </div>
-    <div class="menu-item" id="menu7">
-        <img src="juice.jpg" alt="Добрый Апельсин" onclick="openImage(this.src)">
-        <h3>Добрый Апельсин</h3>
-        <p>Погрузитесь в аромат натурального апельсинового сока, наполненного витаминами и энергией. Он пробудит ваш вкус и зарядит вас на весь день!</p>
-        <div class="prices">
-            <span>Маленькая: 89 руб.</span>
-            <span>Средняя: 100 руб.</span>
-            <span>Большая: 150 руб.</span>
-        </div>
-    </div>
-    <div class="menu-item" id="menu8">
-        <img src="nuggets.jpg" alt="Чикен Вовнаггетс" onclick="openImage(this.src)">
-        <h3>Чикен Вовнаггетс</h3>
-        <p>Попробуйте наши нежные наггетсы! Они настолько сочные и ароматные, что просто тают во рту. Каждый кусочек - это настоящий взрыв вкуса и удовольствия!</p>
-        <div class="prices">
-            <span>3 шт: 80 руб.</span>
-            <span>6 шт: 120 руб.</span>
-            <span>9 шт: 150 руб.</span>
-            <span>18 шт: 260 руб.</span>
-        </div>
-    </div>
-    <div class="menu-item" id="menu9">
-        <img src="strips.jpg" alt="ВовСтрипсы" onclick="openImage(this.src)">
-        <h3>ВовСтрипсы</h3>
-        <p>Насладитесь нежностью наших стрипсов! Сочные, ароматные полоски куриного мяса, обжаренные до золотистой корочки и приправленные специями. Они точно станут вашей новой любимой закуской!</p>
-        <div class="prices">
-            <span>3 шт: 120 руб.</span>
-            <span>5 шт: 150 руб.</span>
-            <span>7 шт: 200 руб.</span>
+
+    <div id="combo" class="menu-category">
+        <h2>ВовКомбо</h2>
+        <div class="menu-grid">
+            <div class="menu-item">
+                <img src="pink_combo.jpg" alt="ПинкБургер ВовКомбо" onclick="openImage(this.src)">
+                <h3>ПинкБургер ВовКомбо</h3>
+                <p>Насыщенный бургер с говяжьей котлетой, свежими овощами и аппетитным сыром, дополненный картофелем по-деревенски и освежающим напитком. Идеальное сочетание вкусов в каждом угощении!</p>
+                <div class="prices">
+                    <button>Стандарт: 150 руб.</button>
+                    <button>Большой: 225 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="nuggets_combo.jpg" alt="Чикен Вовнаггетс ВовКомбо" onclick="openImage(this.src)">
+                <h3>Чикен Вовнаггетс ВовКомбо</h3>
+                <p>Нежные кусочки куриного мяса, обжаренные в хрустящую корочку, в сочетании с картошкой фри и освежающим напитком. Идеальный выбор для любителей наггетсов!</p>
+                <div class="prices">
+                    <button>Станд: 140 руб.</button>
+                    <button>Большой: 210 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="roll_combo.jpg" alt="Биг Вов Ролл ВовКомбо" onclick="openImage(this.src)">
+                <h3>Биг Вов Ролл ВовКомбо</h3>
+                <p>Сочные наггетсы, свежие овощи и нежный сыр, завернутые в тонкий лаваш, с картошкой по-деревенски и освежающим напитком. Великолепное сочетание вкусов в каждом блюде!</p>
+                <div class="prices">
+                    <button>Станд: 155 руб.</button>
+                    <button>Большой: 225 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="strips_combo.jpg" alt="Вовстрипсы ВовКомбо" onclick="openImage(this.src)">
+                <h3>Вовстрипсы ВовКомбо</h3>
+                <p>Насладитесь сочными стрипсами куриного мяса, обжаренными до золотистой корочки, вместе с картофелем дольками и освежающим напитком. Отличный выбор для любителей нежных закусок!</p>
+                <div class="prices">
+                    <button>Станд: 145 руб.</button>
+                    <button>Большой: 215 руб.</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <img src="big_combo.jpg" alt="БигВов ВовКомбо" onclick="openImage(this.src)">
+                <h3>БигВов ВовКомбо</h3>
+                <p>Насыщенный бургер с двумя говяжьими котлетами, свежими овощами и аппетитным сыром, с картошкой по-деревенски и освежающим напитком. Большой вкус в каждом угощении!</p>
+                <div class="prices">
+                    <button>Станд: 165 руб.</button>
+                    <button>Большой: 220 руб.</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -292,10 +487,10 @@
         };
         modalContent.appendChild(closeBtn);
 
-        var image = document.createElement("img");
-        image.src = src;
-        image.className = "modal-image";
-        modalContent.appendChild(image);
+        var img = document.createElement("img");
+        img.className = "modal-image";
+        img.src = src;
+        modalContent.appendChild(img);
 
         document.body.appendChild(modal);
     }
