@@ -72,6 +72,7 @@
             width: calc(33.333% - 40px);
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             text-align: center;
+            position: relative;
         }
         .menu-item img {
             max-width: 100%;
@@ -108,6 +109,17 @@
         }
         .prices button:hover {
             background-color: #ff9933; /* Светло-оранжевый */
+        }
+        .item-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff3300; /* Красный */
+            color: white;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-size: 1em;
+            display: none;
         }
         footer {
             background-color: #ff6600; /* Оранжевый */
@@ -156,6 +168,33 @@
             margin: auto;
             display: block;
         }
+        .cart {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #ff6600;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1001;
+        }
+        .cart p {
+            margin: 0;
+            padding: 0;
+        }
+        .clear-cart {
+            background-color: #ff3300; /* Красный */
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .clear-cart:hover {
+            background-color: #ff9933; /* Светло-оранжевый */
+        }
 
         /* Адаптивный дизайн */
         @media (max-width: 1024px) {
@@ -174,19 +213,20 @@
             .menu-item {
                 width: calc(100% - 40px);
             }
-        }        
+        }
 
-
-
-@media (max-width: 768px) {
-    nav {
-        flex-direction: row;
-        overflow-x: auto;
-    }
-    nav a {
-        white-space: nowrap;
-    }
-}
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: row;
+                overflow-x: auto;
+            }
+            nav a {
+                white-space: nowrap;
+            }
+            .modal-content {
+                margin: 30% auto; /* Fixes the modal issue in mobile view */
+            }
+        }
     </style>
 </head>
 <body>
@@ -201,9 +241,17 @@
     <a href="#fries-starters">Картофель и стартеры</a>
     <a href="#drinks">Холодные напитки</a>
     <a href="#cafe">ВовКафе</a>
+    <a href="#breakfast">ВовЗавтрак</a>
     <a href="#combo">ВовКомбо</a>
     <a id="aboutBtn">О нас</a>
 </nav>
+
+<div class="cart" id="cart">
+    <p>Товаров в корзине: <span id="cart-count">0</span></p>
+    <p>Общая сумма: <span id="cart-total">0</span> руб.</p>
+    <div id="cart-items"></div>
+    <button class="clear-cart" onclick="clearCart()">Очистить корзину</button>
+</div>
 
 <div class="menu">
     <div id="burgers-rolls" class="menu-category">
@@ -214,37 +262,43 @@
                 <h3>БигВов</h3>
                 <p>Погрузитесь в мир великолепного вкуса с нашим БигВовом! Этот бургер - настоящий гастрономический опыт, с двумя сочными говяжьими котлетками, нежным сыром и аппетитными овощами, завёрнутыми в пышную булочку. Один укус, и вы почувствуете вкус праздника!</p>
                 <div class="prices">
-                    <button>225 руб.</button>
+                    <button onclick="addToCart('БигВов', 225)">225 руб.</button>
                 </div>
+                <div class="item-counter" id="counter-menu1">0</div>
             </div>
             <div class="menu-item" id="menu2">
                 <img src="pink.jpg" alt="Пинк Бургер" onclick="openImage(this.src)">
                 <h3>Пинк Бургер</h3>
-                <p>Откройте для себя необычный вкус с Пинк Бургером! Нежная, сочная розовая говяжья котлетка, сочные овощи и ароматный сыр, спрятанные в нежной булочке. Этот бургер - настоящий сюрприз для вашего вкуса!</p>
+                <p>Откройте для себя необычный вкус с Пинк Бургером! Нежная, сочная розовая котлета из говядины с хрустящими овощами и пикантным соусом в яркой розовой булочке. Этот бургер обязательно подарит вам новые впечатления от вкуса!</p>
                 <div class="prices">
-                    <button>190 руб.</button>
+                    <button onclick="addToCart('Пинк Бургер', 235)">235 руб.</button>
                 </div>
+                <div class="item-counter" id="counter-menu2">0</div>
             </div>
             <div class="menu-item" id="menu3">
                 <img src="king.jpg" alt="Вовиный король" onclick="openImage(this.src)">
                 <h3>Вовиный король</h3>
                 <p>Встречайте короля всех бургеров - Вовиный король! Огромный, сытный и невероятно вкусный. Спелые овощи, нежная говяжья котлетка и аппетитный сыр, все это в объятиях нашей нежной булочки. Вовиный король - это настоящий праздник для вашего вкуса!</p>
                 <div class="prices">
-                    <button>170 руб.</button>
+                    <button onclick="addToCart('Вовиный король', 170)">170 руб.</button>
                 </div>
+                <div class="item-counter" id="counter-menu3">0</div>
             </div>
             <div class="menu-item" id="menu4">
                 <img src="roll.jpg" alt="БигВовРолл" onclick="openImage(this.src)">
                 <h3>БигВовРолл</h3>
                 <p>Завернитесь в удовольствие с нашим БигВовРоллом! Нежные наггетсы, свежие овощи и аппетитный сыр, завёрнутые в тонкий лаваш. Этот ролл - настоящее воплощение вкуса и удовольствия!</p>
                 <div class="prices">
-                    <button>280 руб.</button>
+                    <button onclick="addToCart('БигВовРолл', 280)">280 руб.</button>
                 </div>
+                <div class="item-counter" id="counter-menu4">0</div>
             </div>
+
         </div>
     </div>
 
-    <div id="fries-starters" class="menu-category">
+
+<div id="fries-starters" class="menu-category">
         <h2>Картофель и стартеры</h2>
         <div class="menu-grid">
             <div class="menu-item" id="menu5">
@@ -252,31 +306,34 @@
                 <h3>Картофель Фри</h3>
                 <p>Попробуйте наш классический картофель фри - хрустящий, золотистый и невероятно вкусный. Он идеально дополняет любое блюдо и дарит вам незабываемое удовольствие от каждого кусочка.</p>
                 <div class="prices">
-                    <button>Мал: 80 руб.</button>
-                    <button>Ср: 120 руб.</button>
-                    <button>Бол: 170 руб.</button>
+                    <button onclick="addToCart('Картофель Фри', 80, 'мал.')">Мал: 80 руб.</button>
+                    <button onclick="addToCart('Картофель Фри', 120, 'ср.')">Ср: 120 руб.</button>
+                    <button onclick="addToCart('Картофель Фри', 170, 'бол.')">Бол: 170 руб.</button>
                 </div>
+                <div class="item-counter" id="counter-menu5">0</div>
             </div>
-            <div class="menu-item" id="menu8">
+            <div class="menu-item" id="menu6">
                 <img src="nuggets.jpg" alt="Чикен Вовнаггетс" onclick="openImage(this.src)">
                 <h3>Чикен Вовнаггетс</h3>
                 <p>Попробуйте наши нежные наггетсы! Они настолько сочные и ароматные, что просто тают во рту. Каждый кусочек - это настоящий взрыв вкуса и удовольствия!</p>
                 <div class="prices">
-                    <button>3 шт: 80 руб.</button>
-                    <button>6 шт: 120 руб.</button>
-                    <button>9 шт: 150 руб.</button>
-                    <button>18 шт: 260 руб.</button>
+                    <button onclick="addToCart('Чикен Вовнаггетс', 80, '3 шт.')">3 шт: 80 руб.</button>
+                    <button onclick="addToCart('Чикен Вовнаггетс', 120, '6 шт.')">6 шт: 120 руб.</button>
+                    <button onclick="addToCart('Чикен Вовнаггетс', 150, '9 шт.')">9 шт: 150 руб.</button>
+                    <button onclick="addToCart('Чикен Вовнаггетс', 260, '18 шт.')">18 шт: 260 руб.</button>
                 </div>
+                <div class="item-counter" id="counter-menu6">0</div>
             </div>
-            <div class="menu-item" id="menu9">
+            <div class="menu-item" id="menu7">
                 <img src="strips.jpg" alt="ВовСтрипсы" onclick="openImage(this.src)">
                 <h3>ВовСтрипсы</h3>
                 <p>Насладитесь нежностью наших стрипсов! Сочные, ароматные полоски куриного мяса, обжаренные до золотистой корочки и приправленные специями. Они точно станут вашей новой любимой закуской!</p>
                 <div class="prices">
-                    <button>3 шт: 120 руб.</button>
-                    <button>5 шт: 150 руб.</button>
-                    <button>7 шт: 200 руб.</button>
+                    <button onclick="addToCart('ВовСтрипсы', 120, '3 шт.')">3 шт: 120 руб.</button>
+                    <button onclick="addToCart('ВовСтрипсы', 150, '5 шт.')">5 шт: 150 руб.</button>
+                    <button onclick="addToCart('ВовСтрипсы', 200, '7 шт.')">7 шт: 200 руб.</button>
                 </div>
+                <div class="item-counter" id="counter-menu7">0</div>
             </div>
         </div>
     </div>
@@ -284,251 +341,416 @@
     <div id="drinks" class="menu-category">
         <h2>Холодные напитки</h2>
         <div class="menu-grid">
-            <div class="menu-item">
+            <div class="menu-item" id="menu8">
             <img src="cola.jpg" alt="Добрый Кола" onclick="openImage(this.src)">
             <h3>Добрый Кола</h3>
             <p>Освежитесь и насладитесь вкусом детства с нашей Колой! Холодный, освежающий напиток, наполненный пузырьками счастья и ароматом сладости. Кола - это не просто напиток, это настоящее настроение!</p>
             <div class="prices">
-                <button>Мал.: 80 руб.</button>
-                <button>Ср.: 100 руб.</button>
-                <button>Бол.: 150 руб.</button>
+                <button onclick="addToCart('Добрый Кола', 80, 'мал.')">Мал.: 80 руб.</button>
+                <button onclick="addToCart('Добрый Кола', 100, 'ср.')">Ср.: 100 руб.</button>
+                <button onclick="addToCart('Добрый Кола', 150, 'бол.')">Бол.: 150 руб.</button>
             </div>
+            <div class="item-counter" id="counter-menu8">0</div>
         </div>
-        <div class="menu-item">
+        <div class="menu-item" id="menu9">
             <img src="juice.jpg" alt="Добрый Апельсин" onclick="openImage(this.src)">
             <h3>Добрый Апельсин</h3>
             <p>Погрузитесь в аромат натурального апельсинового сока, наполненного витаминами и энергией. Он пробудит ваш вкус и зарядит вас на весь день!</p>
             <div class="prices">
-                <button>Мал.: 80 руб.</button>
-                <button>Ср.: 100 руб.</button>
-                <button>Бол.: 150 руб.</button>
+                <button onclick="addToCart('Добрый Апельсин', 80, 'мал.')">Мал.: 80 руб.</button>
+                <button onclick="addToCart('Добрый Апельсин', 100, 'ср.')">Ср.: 100 руб.</button>
+                <button onclick="addToCart('Добрый Апельсин', 150, 'бол.')">Бол.: 150 руб.</button>
             </div>
-    </div>
+            <div class="item-counter" id="counter-menu9">0</div>
+    	</div>
         </div>
     </div>
 
     <div id="cafe" class="menu-category">
         <h2>ВовКафе</h2>
         <div class="menu-grid">
-            <div class="menu-item">
+            <div class="menu-item" id="menu10">
                 <img src="raspberry.jpg" alt="Малиновая тарталетка" onclick="openImage(this.src)">
                 <h3>Малиновая тарталетка</h3>
                 <p>Нежное слоеное тесто, наполненное сочными ягодами малины и покрытое аппетитным слоем карамели, с капучино или латте. Настоящее удовольствие для вашего вкуса!</p>
                 <div class="prices">
-                    <button>129 руб.</button>
+                    <button onclick="addToCart('Малиновая тарталетка', 129)">129 руб.</button>
                 </div>
+            <div class="item-counter" id="counter-menu10">0</div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="menu11">
                 <img src="classic.jpg" alt="Классический чизкейк" onclick="openImage(this.src)">
                 <h3>Классический чизкейк</h3>
                 <p>Нежный и воздушный чизкейк с нежным вкусом сыра и нотками ванили, с капучино или латте. Нежный десерт, который заставит вас влюбиться с первого кусочка!</p>
                 <div class="prices">
-                    <button>150 руб.</button>
+                    <button onclick="addToCart('Классический чизкейк', 150)">150 руб.</button>
                 </div>
+            <div class="item-counter" id="counter-menu11">0</div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="menu12">
                 <img src="mak.jpg" alt="Плетенка с маком" onclick="openImage(this.src)">
                 <h3>Плетенка с маком</h3>
                 <p>Насыщенное тесто, пропитанное ароматом мака и обжаренное до золотистой корочки, с капучино или латте. Идеальное дополнение к вашему кофейному перерыву!</p>
                 <div class="prices">
-                    <button>173 руб.</button>
+                    <button onclick="addToCart('Плетенка с маком', 173)">173 руб.</button>
                 </div>
+            <div class="item-counter" id="counter-menu12">0</div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="menu13">
                 <img src="caramel.jpg" alt="Карамельный чизкейк" onclick="openImage(this.src)">
                 <h3>Карамельный чизкейк</h3>
                 <p>Нежный и ароматный чизкейк, покрытый слоем карамели и украшенный орехами, с капучино или латте. Идеальное сочетание сладости и нежности в каждом кусочке!</p>
                 <div class="prices">
-                    <button>188 руб.</button>
+                    <button onclick="addToCart('Карамельный чизкейк', 188)">188 руб.</button>
                 </div>
+            <div class="item-counter" id="counter-menu13">0</div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="menu14">
                 <img src="strawberry.jpg" alt="Клубничный чизкейк" onclick="openImage(this.src)">
                 <h3>Клубничный чизкейк</h3>
                 <p>Сочный и ароматный чизкейк с нежным вкусом клубники и кремовым слоем, с капучино или латте. Идеальное лакомство для настоящих ценителей ягодных десертов!</p>
                 <div class="prices">
-                    <button>197 руб.</button>
+                    <button onclick="addToCart('Клубничный чизкейк', 197)">197 руб.</button>
                 </div>
+            <div class="item-counter" id="counter-menu14">0</div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="menu15">
                 <img src="syrnik.jpg" alt="Сырники" onclick="openImage(this.src)">
                 <h3>Сырники</h3>
                 <p>Нежные сырники, приготовленные по особому рецепту с добавлением нежного творожного сыра, с капучино или латте. Насыщенный и ароматный завтрак для вашего идеального утра!</p>
                 <div class="prices">
-                    <button>120 руб.</button>
+                    <button onclick="addToCart('Сырники', 120)">120 руб.</button>
                 </div>
+            <div class="item-counter" id="counter-menu15">0</div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="menu16">
                 <img src="flurry1.jpg" alt="ВовФлурри ДеЛюкс Шоколадно-клубничное" onclick="openImage(this.src)">
                 <h3>ВовФлурри ДеЛюкс Шоколадно-клубничное</h3>
                 <p>Погрузитесь в сладкое удовольствие с ВовФлурри Шоколад-Клубника. Нежное мороженое, насыщенное вкусом шоколада и сочной клубники, станет идеальным десертом для настоящих гурманов.</p>
                 <div class="prices">
-                    <button>164 руб.</button>
+                    <button onclick="addToCart('ВовФлурри ДеЛюкс Шоколадно-клубничное', 164)">164 руб.</button>
                 </div>
+            <div class="item-counter" id="counter-menu16">0</div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="menu17">
                 <img src="flurry2.jpg" alt="ВовФлурри ДеЛюкс Шоколадно-карамельное" onclick="openImage(this.src)">
                 <h3>ВовФлурри ДеЛюкс Шоколадно-карамельное</h3>
                 <p>Насладитесь изысканным сочетанием вкусов с ВовФлурри Шоколад-Карамель. Классическое мороженое с ароматом шоколада и нежной карамели подарит вам моменты настоящего наслаждения.</p>
                 <div class="prices">
-                    <button>188 руб.</button>
+                    <button onclick="addToCart('ВовФлурри ДеЛюкс Шоколадно-карамельное', 188)">188 руб.</button>
                 </div>
+            <div class="item-counter" id="counter-menu17">0</div>
             </div>
-
-
-            <div class="menu-item">
+            <div class="menu-item" id="menu18">
                 <img src="capuccino.jpg" alt="Капучино" onclick="openImage(this.src)">
                 <h3>Капучино</h3>
                 <p>Насладитесь нежным сочетанием ароматного кофе, горячего молока и воздушной молочной пенки. Капучино - идеальный выбор для любителей насыщенного вкуса и нежной текстуры.</p>
                 <div class="prices">
-                    <button>Мал: 80 руб.</button>
-                    <button>Ср: 120 руб.</button>
-                    <button>Бол: 150 руб.</button>
+                    <button onclick="addToCart('Капучино', 80, 'мал.')">Мал: 80 руб.</button>
+                    <button onclick="addToCart('Капучино', 120, 'ср.')">Ср: 120 руб.</button>
+                    <button onclick="addToCart('Капучино', 150, 'бол.')">Бол: 150 руб.</button>
                 </div>
+            <div class="item-counter" id="counter-menu18">0</div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="menu19">
                 <img src="latte.jpg" alt="Латте" onclick="openImage(this.src)">
                 <h3>Латте</h3>
                 <p>Насыщенный кофейный напиток, приготовленный из эспрессо и горячего молока, покрытый аппетитной молочной пенкой. Латте — идеальный способ начать свой день или насладиться моментом расслабления.</p>
                 <div class="prices">
-                    <button>Мал: 80 руб.</button>
-                    <button>Ср: 120 руб.</button>
-                    <button>Бол: 150 руб.</button>
+                    <button onclick="addToCart('Латте', 80, 'мал.')">Мал: 80 руб.</button>
+                    <button onclick="addToCart('Латте', 120, 'ср.')">Ср: 120 руб.</button>
+                    <button onclick="addToCart('Латте', 150, 'бол.')">Бол: 150 руб.</button>
                 </div>
+            <div class="item-counter" id="counter-menu19">0</div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="menu20">
                 <img src="engine.jpg" alt="Black Engine" onclick="openImage(this.src)">
                 <h3>Black Engine</h3>
                 <p>Бодрящий напиток с большим количеством угля.</p>
                 <div class="prices">
-                    <button>Мал: 90 руб.</button>
-                    <button>Ср: 125 руб.</button>
-                    <button>Бол: 173 руб.</button>
+                    <button onclick="addToCart('Black Engine', 90, 'мал.')">Мал: 90 руб.</button>
+                    <button onclick="addToCart('Black Engine', 125, 'ср.')">Ср: 125 руб.</button>
+                    <button onclick="addToCart('Black Engine', 173, 'бол.')">Бол: 173 руб.</button>
                 </div>
+            <div class="item-counter" id="counter-menu20">0</div>
             </div>
         </div>
     </div>
 
     <div id="combo" class="menu-category">
         <h2>ВовКомбо</h2>
-        <div class="menu-grid">
+        <div class="menu-grid" id="menu21">
             <div class="menu-item">
                 <img src="pink_combo.jpg" alt="ПинкБургер ВовКомбо" onclick="openImage(this.src)">
                 <h3>ПинкБургер ВовКомбо</h3>
                 <p>Насыщенный бургер с говяжьей котлетой, свежими овощами и аппетитным сыром, дополненный картофелем по-деревенски и освежающим напитком. Идеальное сочетание вкусов в каждом угощении!</p>
                 <div class="prices">
-                    <button>Стандарт: 150 руб.</button>
-                    <button>Большой: 225 руб.</button>
+                    <button onclick="addToCart('ПинкБургер ВовКомбо', 150, 'станд.')">Стандарт: 150 руб.</button>
+                    <button onclick="addToCart('ПинкБургер ВовКомбо', 225, 'бол.')">Большой: 225 руб.</button>
                 </div>
+                <div class="item-counter" id="counter-menu21">0</div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="menu22">
                 <img src="nuggets_combo.jpg" alt="Чикен Вовнаггетс ВовКомбо" onclick="openImage(this.src)">
                 <h3>Чикен Вовнаггетс ВовКомбо</h3>
                 <p>Нежные кусочки куриного мяса, обжаренные в хрустящую корочку, в сочетании с картошкой фри и освежающим напитком. Идеальный выбор для любителей наггетсов!</p>
                 <div class="prices">
-                    <button>Станд: 140 руб.</button>
-                    <button>Большой: 210 руб.</button>
+                    <button onclick="addToCart('Чикен Вовнаггетс ВовКомбо', 140, 'станд.')">Станд: 140 руб.</button>
+                    <button onclick="addToCart('Чикен Вовнаггетс ВовКомбо', 210, 'бол.')">Большой: 210 руб.</button>
                 </div>
+                <div class="item-counter" id="counter-menu22">0</div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="menu23">
                 <img src="roll_combo.jpg" alt="Биг Вов Ролл ВовКомбо" onclick="openImage(this.src)">
                 <h3>Биг Вов Ролл ВовКомбо</h3>
                 <p>Сочные наггетсы, свежие овощи и нежный сыр, завернутые в тонкий лаваш, с картошкой по-деревенски и освежающим напитком. Великолепное сочетание вкусов в каждом блюде!</p>
                 <div class="prices">
-                    <button>Станд: 155 руб.</button>
-                    <button>Большой: 225 руб.</button>
+                    <button onclick="addToCart('Биг Вов Ролл ВовКомбо', 155, 'станд.')">Станд: 155 руб.</button>
+                    <button onclick="addToCart('Биг Вов Ролл ВовКомбо', 225, 'бол.')">Большой: 225 руб.</button>
                 </div>
+                <div class="item-counter" id="counter-menu23">0</div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="menu24">
                 <img src="strips_combo.jpg" alt="Вовстрипсы ВовКомбо" onclick="openImage(this.src)">
                 <h3>Вовстрипсы ВовКомбо</h3>
                 <p>Насладитесь сочными стрипсами куриного мяса, обжаренными до золотистой корочки, вместе с картофелем дольками и освежающим напитком. Отличный выбор для любителей нежных закусок!</p>
                 <div class="prices">
-                    <button>Станд: 145 руб.</button>
-                    <button>Большой: 215 руб.</button>
+                    <button onclick="addToCart('Вовстрипсы ВовКомбо', 145, 'станд.')">Станд: 145 руб.</button>
+                    <button onclick="addToCart('Вовстрипсы ВовКомбо', 215, 'бол.')">Большой: 215 руб.</button>
                 </div>
+                <div class="item-counter" id="counter-menu24">0</div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="menu25">
                 <img src="big_combo.jpg" alt="БигВов ВовКомбо" onclick="openImage(this.src)">
                 <h3>БигВов ВовКомбо</h3>
                 <p>Насыщенный бургер с двумя говяжьими котлетами, свежими овощами и аппетитным сыром, с картошкой по-деревенски и освежающим напитком. Большой вкус в каждом угощении!</p>
                 <div class="prices">
-                    <button>Станд: 165 руб.</button>
-                    <button>Большой: 220 руб.</button>
+                    <button onclick="addToCart('БигВов ВовКомбо', 165, 'станд.')">Станд: 165 руб.</button>
+                    <button onclick="addToCart('БигВов ВовКомбо', 220, 'бол.')">Большой: 220 руб.</button>
                 </div>
+                <div class="item-counter" id="counter-menu25">0</div>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" id="menu26">
                 <img src="kids.jpg" alt="ДетКомбо" onclick="openImage(this.src)">
                 <h3>ДетКомбо</h3>
                 <p>Побалуйте своих маленьких гурманов с нашим ДетКомбо! Небольшой, но аппетитный бургер, освежающий сок, хрустящая картошечка и забавная игрушка — всё, что нужно для радости и улыбок!</p>
                 <div class="prices">
-                    <button>179 руб.</button>
+                    <button onclick="addToCart('ДетКомбо', 179)">179 руб.</button>
                 </div>
+                <div class="item-counter" id="counter-menu26">0</div>
             </div>
         </div>
     </div>
+
+
+    <div id="breakfast" class="menu-category">
+        <h2>ВовЗавтрак</h2>
+        <div class="menu-grid">
+            <div class="menu-item" id="menu27">
+                <img src="muffin_egg_bacon.jpg" alt="ВовМаффин с яйцом и беконом" onclick="openImage(this.src)">
+                <h3>ВовМаффин с яйцом и беконом</h3>
+                <p>Классическое сочетание - яйцо и бекон в хрустящем маффине. Этот завтрак подарит вам настоящий заряд энергии и вкуса с самого утра.</p>
+                <div class="prices">
+                    <button onclick="addToCart('ВовМаффин с яйцом и беконом', 130)">130 руб.</button>
+                </div>
+                <div class="item-counter" id="counter-menu27">0</div>
+            </div>
+            <div class="menu-item" id="menu28">
+                <img src="muffin_egg_cheese.jpg" alt="ВовМаффин с яйцом и сыром" onclick="openImage(this.src)">
+                <h3>ВовМаффин с яйцом и сыром</h3>
+                <p>Легкий и вкусный ВовМаффин с яйцом и расплавленным сыром. Прекрасный выбор для тех, кто ценит утренние удовольствия.</p>
+                <div class="prices">
+                    <button onclick="addToCart('ВовМаффин с яйцом и сыром', 130)">130 руб.</button>
+                </div>
+                <div class="item-counter" id="counter-menu28">0</div>
+            </div>
+            <div class="menu-item" id="menu29">
+                <img src="muffin_egg_cutlet.jpg" alt="ВовМаффин с яйцом и свиной котлетой" onclick="openImage(this.src)">
+                <h3>ВовМаффин с яйцом и свиной котлетой</h3>
+                <p>Нежный маффин с сочной свиной котлетой и яйцом - идеальный завтрак, который подарит вам силы на весь день. Простой и вкусный выбор.</p>
+                <div class="prices">
+                    <button onclick="addToCart('ВовМаффин с яйцом и свиной котлетой', 130)">130 руб.</button>
+                </div>
+                <div class="item-counter" id="counter-menu29">0</div>
+            </div>
+            <div class="menu-item" id="menu30">
+                <img src="muffin_duple_egg_cutlet.jpg" alt="Двойной ВовМаффин с яйцом и свиной котлетой" onclick="openImage(this.src)">
+                <h3>Двойной ВовМаффин с яйцом и свиной котлетой</h3>
+                <p>Удовольствие для самых голодных - два слоя сочной свиной котлеты, яйцо и сыр в хрустящем маффине. Идеально для тех, кто хочет начинать день с вкусного и сытного завтрака.</p>
+                <div class="prices">
+                    <button onclick="addToCart('Двойной ВовМаффин с яйцом и свиной котлетой', 240)">240 руб.</button>
+                </div>
+                <div class="item-counter" id="counter-menu30">0</div>
+            </div>
+            <div class="menu-item" id="menu31">
+                <img src="muffin_fresh.jpg" alt="Фреш ВовМаффин" onclick="openImage(this.src)">
+                <h3>Фреш ВовМаффин</h3>
+                <p>Ощутите свежесть утра с нашим Фреш ВовМаффином. Легкий, полезный и вкусный завтрак для тех, кто любит начать день с чего-то особенного.</p>
+                <div class="prices">
+                    <button onclick="addToCart('Фреш ВовМаффин', 135)">135 руб.</button>
+                </div>
+                <div class="item-counter" id="counter-menu31">0</div>
+            </div>
+            <div class="menu-item" id="menu32">
+                <img src="combo_muffin_duple_egg_cutlet.jpg" alt="Двойной ВовМаффин с яйцом и свиной котлетой ВовКомбо" onclick="openImage(this.src)">
+                <h3>Двойной ВовМаффин с яйцом и свиной котлетой ВовКомбо</h3>
+                <p>Погрузитесь в утреннее удовольствие с нашим Двойным ВовМаффином! Две сочные свиные котлеты, яйцо и расплавленный сыр, все это дополняет хрустящий маффин. В комплекте с картошкой и освежающим напитком.</p>
+                <div class="prices">
+                    <button onclick="addToCart('Двойной ВовМаффин с яйцом и свиной котлетой ВовКомбо', 150, 'станд.')">Станд: 150 руб.</button>
+                    <button onclick="addToCart('Двойной ВовМаффин с яйцом и свиной котлетой ВовКомбо', 210, 'бол.')">Большой: 210 руб.</button>
+                </div>
+                <div class="item-counter" id="counter-menu32">0</div>
+            </div>
+            <div class="menu-item" id="menu33">
+                <img src="muffin_combo_2.jpg" alt="ВовМаффин с яйцом и свиной котлетой ВовКомбо" onclick="openImage(this.src)">
+                <h3>ВовМаффин с яйцом и свиной котлетой ВовКомбо</h3>
+                <p>Прекрасный выбор для завтрака - ВовМаффин с яйцом и свиной котлетой. Сочная котлета, яйцо и маффин, создающие идеальное сочетание. Включает картошку и напиток для полного удовольствия.</p>
+                <div class="prices">
+                    <button onclick="addToCart('ВовМаффин с яйцом и свиной котлетой ВовКомбо', 150, 'станд.')">Станд: 150 руб.</button>
+                    <button onclick="addToCart('ВовМаффин с яйцом и свиной котлетой ВовКомбо', 210, 'бол.')">Большой: 210 руб.</button>
+                </div>
+                <div class="item-counter" id="counter-menu33">0</div>
+            </div>
+            <div class="menu-item" id="menu34">
+                <img src="muffin_combo_3.jpg" alt="ВовМаффин с яйцом и сыром ВовКомбо" onclick="openImage(this.src)">
+                <h3>ВовМаффин с яйцом и сыром ВовКомбо</h3>
+                <p>Начните день с легкости с нашим ВовМаффином с яйцом и сыром. Нежное яйцо и растаявший сыр на хрустящем маффине подарят вам заряд бодрости. В комплекте с картошкой и напитком для полного завтрака.</p>
+                <div class="prices">
+                    <button onclick="addToCart('ВовМаффин с яйцом и сыром ВовКомбо', 170, 'станд.')">Станд: 170 руб.</button>
+                    <button onclick="addToCart('ВовМаффин с яйцом и сыром ВовКомбо', 260, 'бол.')">Большой: 260 руб.</button>
+                </div>
+                <div class="item-counter" id="counter-menu34">0</div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Остальные категории и элементы меню -->
+
 </div>
 
 <footer>
-    <p>(c) 2024 МакВова. Все права защищены.</p>
+    &copy; 2024 МакВова. Все права защищены.
 </footer>
+
+<!-- Модальное окно -->
+<div id="imageModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content modal-image" id="img01">
+</div>
 
 <div id="aboutModal" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>О нас</h2>
-        <p>Добро пожаловать в МакВова! Мы предлагаем вкусный фастфуд, приготовленный с любовью и вниманием к качеству. Наши блюда всегда свежие, а сервис - быстрый и дружелюбный. Приходите и наслаждайтесь вкусом!</p>
+        <span class="close" id="closeAbout">&times;</span>
+        <p>Мы – МакВова, и мы рады предложить вам вкуснейший фастфуд!</p>
+        <p>Наши бургеры и роллы готовятся только из самых свежих продуктов и с любовью к каждому гостю. Присоединяйтесь к нам и наслаждайтесь незабываемым вкусом!</p>
     </div>
 </div>
 
 <script>
-    var modal = document.getElementById("aboutModal");
-    var btn = document.getElementById("aboutBtn");
-    var span = document.getElementsByClassName("close")[0];
+    // Модальное окно для изображений
+    var modal = document.getElementById("imageModal");
+    var modalImg = document.getElementById("img01");
+    var aboutModal = document.getElementById("aboutModal");
+    var aboutBtn = document.getElementById("aboutBtn");
+    var closeAbout = document.getElementById("closeAbout");
 
-    btn.onclick = function() {
+    function openImage(src) {
         modal.style.display = "block";
+        modalImg.src = src;
     }
 
+    var span = document.getElementsByClassName("close")[0];
     span.onclick = function() {
         modal.style.display = "none";
+    }
+
+    // Модальное окно "О нас"
+    aboutBtn.onclick = function() {
+        aboutModal.style.display = "block";
+    }
+    closeAbout.onclick = function() {
+        aboutModal.style.display = "none";
+    }
+
+    // Корзина
+    var cartCount = 0;
+    var cartTotal = 0;
+    var cartItems = {};
+    var totalCartItems = {};
+
+    function addToCart(itemName, price, extra = "") {
+        cartCount++;
+        cartTotal += price;
+
+        if (cartItems[itemName + " " + extra]) {
+            cartItems[itemName + " " + extra].count++;
+        } else {
+            cartItems[itemName + " " + extra] = { price: price, count: 1 };
+        }
+        if (totalCartItems[itemName]) {
+            totalCartItems[itemName].count++;
+        } else {
+            totalCartItems[itemName] = { price: price, count: 1 };
+        }
+
+        document.getElementById("cart-count").innerText = cartCount;
+        document.getElementById("cart-total").innerText = cartTotal;
+
+        updateCartDisplay();
+        updateItemCounter(itemName, extra);
+
+        document.getElementById("cart").style.display = "block";
+    }
+
+    function updateCartDisplay() {
+        var cartItemsContainer = document.getElementById("cart-items");
+        cartItemsContainer.innerHTML = "";
+
+        for (var item in cartItems) {
+            if (cartItems.hasOwnProperty(item)) {
+                var itemDiv = document.createElement("div");
+                itemDiv.innerText = item + ": " + cartItems[item].count + " шт.";
+                cartItemsContainer.appendChild(itemDiv);
+            }
+        }
+    }
+
+    function updateItemCounter(itemName) {
+        var itemId = "menu" + (["БигВов", "Пинк Бургер", "Вовиный король", "БигВовРолл", "Картофель Фри", "Чикен Вовнаггетс", "ВовСтрипсы", "Добрый Апельсин", "Добрый Кола", "Малиновая тарталетка", "Классический чизкейк", "Плетенка с маком", "Карамельный чизкейк", "Клубничный чизкейк", "Сырники", "ВовФлурри ДеЛюкс Шоколадно-клубничное", "ВовФлурри ДеЛюкс Шоколадно-карамельное", "Капучино", "Латте", "Black Engine", "ПинкБургер ВовКомбо", "Чикен Вовнаггетс ВовКомбо", "Биг Вов Ролл ВовКомбо", "Вовстрипсы ВовКомбо", "БигВов ВовКомбо", "ДетКомбо", "ВовМаффин с яйцом и беконом", "ВовМаффин с яйцом и сыром", "ВовМаффин с яйцом и свиной котлетой", "Двойной ВовМаффин с яйцом и свиной котлетой", "Фреш ВовМаффин", "Двойной ВовМаффин с яйцом и свиной котлетой ВовКомбо", "ВовМаффин с яйцом и свиной котлетой ВовКомбо", "ВовМаффин с яйцом и сыром ВовКомбо"].indexOf(itemName) + 1);
+        var counterElement = document.getElementById("counter-" + itemId);
+        counterElement.innerText = totalCartItems[itemName].count;
+        counterElement.style.display = "block";
+    }
+
+    function clearCart() {
+        cartCount = 0;
+        cartTotal = 0;
+        cartItems = {};
+        totalCartItems = {};
+
+        document.getElementById("cart-count").innerText = cartCount;
+        document.getElementById("cart-total").innerText = cartTotal;
+
+        updateCartDisplay();
+        clearItemCounters();
+        document.getElementById("cart").style.display = "none";
+    }
+
+    function clearItemCounters() {
+        var counters = document.getElementsByClassName("item-counter");
+        for (var i = 0; i < counters.length; i++) {
+            counters[i].innerText = "0";
+            counters[i].style.display = "none";
+        }
     }
 
     window.onclick = function(event) {
         if (event.target == modal) {
             modal.style.display = "none";
+        } else if (event.target == aboutModal) {
+            aboutModal.style.display = "none";
         }
-    }
-
-    function openImage(src) {
-        var modal = document.createElement("div");
-        modal.className = "modal";
-        modal.style.display = "block";
-        modal.onclick = function() {
-            modal.style.display = "none";
-            modal.innerHTML = "";
-        };
-
-        var modalContent = document.createElement("div");
-        modalContent.className = "modal-content";
-        modal.appendChild(modalContent);
-
-        var closeBtn = document.createElement("span");
-        closeBtn.className = "close";
-        closeBtn.innerHTML = "&times;";
-        closeBtn.onclick = function(event) {
-            event.stopPropagation();
-            modal.style.display = "none";
-            modal.innerHTML = "";
-        };
-        modalContent.appendChild(closeBtn);
-
-        var img = document.createElement("img");
-        img.className = "modal-image";
-        img.src = src;
-        modalContent.appendChild(img);
-
-        document.body.appendChild(modal);
     }
 </script>
 
