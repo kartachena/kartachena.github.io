@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#ffffff">
+<title>FX</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #fff; color: #111; font-family: -apple-system, system-ui, sans-serif; overflow: hidden; }
+  #app {
+    height: var(--vh, 100dvh);
+    display: flex; flex-direction: column;
+    padding: max(8px, env(safe-area-inset-top)) 10px max(6px, env(safe-area-inset-bottom));
+    gap: 8px;
+  }
+  .row {
+    flex: 1 1 0; min-height: 0;
+    display: flex; align-items: center; gap: 8px;
+    border: 2px solid #111; border-radius: 14px; padding: 0 6px 0 14px;
+  }
+  .row:focus-within { border-color: #2563eb; }
+  .cur { font-size: clamp(18px, 6vw, 30px); font-weight: 700; width: 3.2em; flex: none; }
+  input {
+    flex: 1; min-width: 0; height: 100%;
+    border: 0; outline: 0; background: transparent;
+    font-size: clamp(22px, 8vw, 44px); text-align: right;
+    font-variant-numeric: tabular-nums; color: inherit;
+  }
+  button {
+    flex: none; width: 44px; height: 44px; border: 0; background: transparent;
+    font-size: 28px; color: #888; border-radius: 50%;
+  }
+  button:active { background: #eee; }
+  #status { flex: none; font-size: 11px; color: #888; text-align: center; }
+  #status.err { color: #c00; }
+  .msg { margin: auto; padding: 20px; font-size: 16px; line-height: 1.5; }
+  code { background: #f2f2f2; padding: 1px 4px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(() => {
+  const app = document.getElementById('app');
+
+  // --- Height = visible area (excluding the on-screen keyboard) ---
+  const setVh = () => {
+    const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    document.documentElement.style.setProperty('--vh', h + 'px');
+    window.scrollTo(0, 0);
+  };
+  setVh();
+  (window.visualViewport || window).addEventListener('resize', setVh);
+
+  // --- Currencies from URL: ?c=EUR,RSD,GEL,GBP  or  ?EUR&RSD&GEL ---
+  const qs = new URLSearchParams(location.search);
+  let list = qs.get('c') ? qs.get('c').split(',') : [...qs.keys()];
+  list = [...new Set(list.map(s => s.trim().toUpperCase()).filter(s => /^[A-Z]{3}$/.test(s)))];
+
+  if (list.length < 2 || list.length > 5) {
+    app.innerHTML = '<div class="msg">Specify 2 to 5 currencies.<br>Example: <code>?c=EUR,RSD,GEL,GBP</code></div>';
+    return;
+  }
+
+  // --- Markup ---
+  const inputs = {};
+  list.forEach(code => {
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `<span class="cur">${code}</span>
+      <input inputmode="decimal" autocomplete="off" enterkeyhint="done">
+      <button aria-label="clear">×</button>`;
+    const inp = row.querySelector('input');
+    inp.dataset.code = code;
+    inputs[code] = inp;
+    row.querySelector('button').addEventListener('pointerdown', e => {
+      e.preventDefault();               // keep focus so the keyboard stays open
+      list.forEach(c => inputs[c].value = '');
+    });
+    app.appendChild(row);
+  });
+  const status = document.createElement('div');
+  status.id = 'status';
+  status.textContent = 'loading rates…';
+  app.appendChild(status);
+
+  // --- Rates (base EUR) ---
+  let rates = null;
+  const CACHE = 'fx_rates_v1';
+
+  const sources = [
+    // Primary: fawazahmed0/currency-api (CDN + mirror)
+    async () => {
+      const urls = [
+        'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.min.json',
+        'https://latest.currency-api.pages.dev/v1/currencies/eur.min.json'
+      ];
+      for (const u of urls) {
+        try {
+          const r = await fetch(u, { cache: 'no-store' });
+          if (!r.ok) continue;
+          const j = await r.json();
+          const out = {};
+          for (const k in j.eur) out[k.toUpperCase()] = j.eur[k];
+          return { rates: out, date: j.date };
+        } catch (e) {}
+      }
+      throw 0;
+    },
+    // Fallback: open.er-api.com
+    async () => {
+      const r = await fetch('https://open.er-api.com/v6/latest/EUR', { cache: 'no-store' });
+      const j = await r.json();
+      if (j.result !== 'success') throw 0;
+      return { rates: j.rates, date: (j.time_last_update_utc || '').slice(5, 16) };
+    }
+  ];
+
+  const apply = (data, note) => {
+    rates = data.rates; rates.EUR = 1;
+    const missing = list.filter(c => !rates[c]);
+    status.className = missing.length ? 'err' : '';
+    status.textContent = missing.length
+      ? 'no rate for: ' + missing.join(', ')
+      : 'rates as of ' + data.date + (note || '');
+    // If the user already typed something before rates arrived, recalculate
+    const active = document.activeElement;
+    if (active && active.dataset && active.dataset.code && active.value) recalc(active.dataset.code);
+  };
+
+  (async () => {
+    for (const s of sources) {
+      try {
+        const d = await s();
+        apply(d);
+        try { localStorage.setItem(CACHE, JSON.stringify(d)); } catch (e) {}
+        return;
+      } catch (e) {}
+    }
+    // Last resort: cached rates from a previous visit
+    try {
+      const d = JSON.parse(localStorage.getItem(CACHE));
+      if (d) { apply(d, ' (offline, cached)'); return; }
+    } catch (e) {}
+    status.className = 'err';
+    status.textContent = 'failed to load rates';
+  })();
+
+  // --- Input and recalculation ---
+  const parse = v => parseFloat(v.replace(/\s/g, ''));
+
+  // Space as thousands separator, dot as decimal separator
+  const fmt = n => {
+    const digits = n >= 1 ? 2 : 4;
+    return n.toLocaleString('en-US', { maximumFractionDigits: digits }).replace(/,/g, ' ');
+  };
+
+  // Digits plus a single decimal separator; comma is converted to dot
+  const sanitize = v => {
+    v = v.replace(/,/g, '.').replace(/[^\d.]/g, '');
+    const i = v.indexOf('.');
+    if (i !== -1) v = v.slice(0, i + 1) + v.slice(i + 1).replace(/\./g, '');
+    return v;
+  };
+
+  function recalc(from) {
+    const val = parse(inputs[from].value);
+    list.forEach(c => {
+      if (c === from) return;
+      if (!rates || isNaN(val) || !rates[from] || !rates[c]) { inputs[c].value = ''; return; }
+      inputs[c].value = fmt(val / rates[from] * rates[c]);
+    });
+  }
+
+  list.forEach(code => {
+    const inp = inputs[code];
+    inp.addEventListener('input', () => {
+      const pos = inp.selectionStart, before = inp.value.length;
+      inp.value = sanitize(inp.value);
+      const p = Math.max(0, pos - (before - inp.value.length));
+      inp.setSelectionRange(p, p);
+      recalc(code);
+    });
+    // On focus: strip group separators and select all, so new input replaces the value
+    inp.addEventListener('focus', () => {
+      inp.value = inp.value.replace(/\s/g, '');
+      setTimeout(() => inp.select(), 0);
+    });
+  });
+
+  inputs[list[0]].focus();
+})();
+</script>
+</body>
+</html>
